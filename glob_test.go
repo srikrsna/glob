@@ -23,6 +23,8 @@ var matchTests = []MatchTest{
 	{"a*/b", "a/c/b", false, nil},
 	{"a*b*c*d*e*/f", "axbxcxdxe/f", true, nil},
 	{"a*b*c*d*e**f", "axbxcxdxe/f", true, nil},
+	{"**", "axbxcxdxe/f", true, nil},
+	{"a*b*c*d*e**f", "axbxcxdxe/g", false, nil},
 	{"a*b*c*d*e*/f", "axbxcxdxexxx/f", true, nil},
 	{"a*b*c*d*e*/f", "axbxcxdxe/xxx/f", false, nil},
 	{"a*b*c*d*e*/f", "axbxcxdxexxx/fff", false, nil},
@@ -91,21 +93,23 @@ func TestMatchFast(t *testing.T) {
 }
 
 func BenchmarkMatch(b *testing.B) {
-	tt := matchTests[0]
 	for i := 0; i < b.N; i++ {
-		ok, err := Match(tt.pattern, tt.s)
-		if ok != tt.match || err != tt.err {
-			b.Errorf("Match(%#q, %#q) = %v, %v want %v, %v", tt.pattern, tt.s, ok, err, tt.match, tt.err)
+		for _, tt := range matchTests {
+			ok, err := Match(tt.pattern, tt.s)
+			if ok != tt.match || err != tt.err {
+				b.Errorf("Match(%#q, %#q) = %v, %v want %v, %v", tt.pattern, tt.s, ok, err, tt.match, tt.err)
+			}
 		}
 	}
 }
 
 func BenchmarkMatchFast(b *testing.B) {
-	tt := matchTests[0]
 	for i := 0; i < b.N; i++ {
-		ok := MatchFast(tt.pattern, tt.s)
-		if ok != tt.match {
-			b.Errorf("MatchFast(%#q, %#q) = %v want %v", tt.pattern, tt.s, ok, tt.match)
+		for _, tt := range matchTests {
+			ok := MatchFast(tt.pattern, tt.s)
+			if ok != tt.match {
+				b.Errorf("MatchFast(%#q, %#q) = %v want %v", tt.pattern, tt.s, ok, tt.match)
+			}
 		}
 	}
 }
