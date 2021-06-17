@@ -31,7 +31,6 @@ var ErrBadPattern = path.ErrBadPattern
 // Match requires pattern to match all of name, not just a substring.
 // The only possible returned error is ErrBadPattern, when pattern
 // is malformed.
-//
 func Match(pattern, name string) (bool, error) {
 Pattern:
 	for len(pattern) > 0 {
@@ -91,7 +90,8 @@ Pattern:
 	return len(name) == 0, nil
 }
 
-// MatchFast is like Match but ignores pattern errors and returns false
+// MatchFast is like Match but ignores pattern errors and returns false in case of an error
+// Use this for performance critical paths where pattern is guaranteed to be a glob
 func MatchFast(pattern, name string) bool {
 Pattern:
 	for len(pattern) > 0 {
